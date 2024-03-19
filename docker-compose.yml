@@ -1,0 +1,31 @@
+version: '1.0'
+services:
+  web_site:
+      build: ./web_site/
+      restart: always
+      depends_on:
+        mysql:
+          condition: service_healthy     
+      ports:
+        - '5000:5000'
+  mysql:
+      image: mysql:latest
+      restart: always
+      environment:
+          MYSQL_HOST: mysql
+          MYSQL_DATABASE: my_db
+          MYSQL_ROOT_PASSWORD: 'root'
+      healthcheck:
+          test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+          timeout: 3s
+          retries: 20
+      ports:
+          - '3306:3306'
+  flyway:
+    image: flyway/flyway:latest
+    volumes:
+      - "./MySQL/migrations:/flyway/sql"
+    command: -url=jdbc:mysql://mysql:3306/my_db?allowPublicKeyRetrieval=true -user=root -password=root migrate
+    depends_on:
+        mysql:
+            condition: service_healthy

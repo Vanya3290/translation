@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Translate{% endblock %}
+
+{% block content %}
+<div class="mt-5">
+    <h1 class="text-center">Translate Text</h1>
+    <form method="post" class="mt-4">
+        <div class="form-group">
+            <textarea id="text" name="text" class="form-control" placeholder="Enter text to translate" required>{{ original_text or '' }}</textarea>
+        </div>
+        <div class="form-group">
+            <select id="language" name="language" class="form-control">
+                {% for name, code in supported_languages.items() %}
+                <option value="{{ code }}" {% if selected_language == code %} selected {% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Translate</button>
+    </form>
+    {% if translated_text %}
+    <div class="form-group mt-4">
+        <label for="translated_text">Translated Text</label>
+        <textarea id="translated_text" name="translated_text" class="form-control" rows="5" readonly>{{ translated_text }}</textarea>
+    </div>
+    {% endif %}
+
+    {% if history %}
+    <div class="mt-4">
+        <h2>Translation History</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Original Text</th>
+                    <th scope="col">Translated Text</th>
+                    <th scope="col">Target Language</th>
+                    <th scope="col">Translation Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in history %}
+                <tr>
+                    <td>{{ record[0] }}</td>
+                    <td>{{ record[1] }}</td>
+                    <td>{{ record[2] }}</td>
+                    <td>{{ record[3].strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    
+</div>
+{% endblock %}
